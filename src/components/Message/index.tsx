@@ -1,27 +1,46 @@
 import React from 'react';
 
 import { View, Text, ViewBase } from 'react-native';
+import { MotiView } from '@motify/components';
 import { UserPhoto } from '../UserPhoto';
 
 import { styles } from './styles';
 
-export function Message(){
+export type MessageProps = {
+  id: string;
+  text: string;
+  user: {
+    name: string;
+    avatar_url: string;
+  }
+}
+
+type Props = {
+  data: MessageProps;
+}
+
+export function Message({ data }: Props){
   return (
-    <View style={styles.container}>
+    <MotiView
+      from={{ opacity: 0, translateY: -50 }}
+      animate={{ opacity: 1, translateY: 0 }}
+      transition={{ type: 'timing', duration: 700 }}
+     style={styles.container}
+     >
       <Text style={styles.footer}>
-        Texto da mensagem
+        {data.text}
       </Text>
       <View>
         <UserPhoto 
-          imageUri="https://github.com/josealves380.png"
+          imageUri={data.user.avatar_url}
           sizes="SMALL"
         />
 
         <Text style={styles.userName}>
-          Nome do Usuario
+          {data.user.name}
         </Text>
       </View>
 
-    </View>
+    </MotiView>
   );
 }
