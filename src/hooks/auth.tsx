@@ -32,7 +32,9 @@ type AuthResponse = {
 type AuthorizationResponse = {
   params: {
     code?: string;
-  }
+    error?: string;
+  },
+  type?: string;
 }
 
 export const AuthContext = createContext({} as AuthContextData);
@@ -45,10 +47,10 @@ function AuthProvider({ children }: AuthProviderProps) {
     try {
       setIsSigningIn(true)
       const authUrl = `https://github.com/login/oauth/authorize?client-id=${CLIENT_ID}&scope=${SCOPE}`;
-      const { params } = await AuthSessions.startAsync({ authUrl }) as AuthorizationResponse;  
+      const authSessionResponse = await AuthSessions.startAsync({ authUrl }) as AuthorizationResponse;  
   
-      if (params && params.code) {
-        const authResponse = await api.post('/authenticate', { code: params.code });
+      if (authSessionResponse.type === 'sucess' && authSessionResponse.params.error!== 'acess_denied') {
+        const authResponse = await api.post('/authenticate', { code: authSessionResponse.params.code });
         const { user, token } = authResponse.data as AuthResponse;
   
         api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
